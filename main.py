@@ -20,7 +20,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -29,30 +29,31 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @app.post("/books")
 def create_book(book_data: schema.BookCreate, user: schema.UserBase = Depends(get_current_user)):
+    book_data.user_id = user.id  # Ensure the book is linked to the user
     book = crud_service.create_book(book_data)
     return {"message": "Book created successfully!", "data": book}
 
 @app.get("/books")
-def get_all_books(skip: int = 0, limit: int = 10):
+def get_all_books(skip: int = 0, limit: int = 10, user: schema.UserBase = Depends(get_current_user)):
     books = crud_service.get_all_books(skip, limit)
     return {"data": books}
 
 @app.get("/books/{book_id}")
-def get_book_by_id(book_id: str):
+def get_book_by_id(book_id: str, user: schema.UserBase = Depends(get_current_user)):
     book = crud_service.get_book_by_id(book_id)
     if not book:
         return {"message": "Book not found"}
     return {"data": book}
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
+def update_book(book_id: str, book_data: schema.BookUpdate, user: schema.UserBase = Depends(get_current_user)):
     book = crud_service.update_book(book_id, book_data)
     if not book:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book updated successfully!", "data": book}
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
+def delete_book(book_id: str, user: schema.UserBase = Depends(get_current_user)):
     result = crud_service.delete_book(book_id)
     if not result:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
