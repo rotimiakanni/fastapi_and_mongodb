@@ -6,11 +6,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 from crud import user_crud_service
-
+# from database import SessionLocal
+# from database import get_db
 load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY')  # Change this in production
