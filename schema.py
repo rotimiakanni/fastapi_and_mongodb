@@ -5,9 +5,11 @@ class BookBase(BaseModel):
     title: str
     author: str
     description: str
+    
 
 class Book(BookBase):
     id: str
+    user_id: str
         
 class BookCreate(BookBase):
     pass
@@ -24,5 +26,6 @@ class UserCreate(UserBase):
     password: str
 
 class UserInDB(UserBase):
+    id: str
     full_name: str
     hashed_password: str
