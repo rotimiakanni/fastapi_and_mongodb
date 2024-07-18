@@ -1,6 +1,10 @@
 from fastapi.encoders import jsonable_encoder
-from bson.objectid import ObjectId
 from fastapi import HTTPException, status
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
+client = MongoClient("mongodb://localhost:27017")
+db = client.my_database
 
 from database import (
     books_collection,

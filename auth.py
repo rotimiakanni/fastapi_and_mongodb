@@ -1,13 +1,12 @@
 import os
-
 from datetime import datetime, timedelta
 from typing import Optional
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from dotenv import load_dotenv
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from crud import user_crud_service
 
