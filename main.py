@@ -34,12 +34,12 @@ def create_book(book_data: schema.BookCreatePayload, user: schema.UserBase = Dep
     return {"message": "Book created successfully!", "data": book}
 
 @app.get("/books")
-def get_all_books(skip: int = 0, limit: int = 10):
+def get_all_books(skip: int = 0, limit: int = 10, user: schema.UserBase = Depends(get_current_user)):
     books = crud_service.get_all_books(skip, limit)
     return {"data": books}
 
 @app.get("/books/{book_id}")
-def get_book_by_id(book_id: str):
+def get_book_by_id(book_id: str, user: schema.UserBase = Depends(get_current_user)):
     book = crud_service.get_book_by_id(book_id)
     if not book:
         return {"message": "Book not found"}
