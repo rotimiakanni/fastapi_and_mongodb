@@ -5,7 +5,6 @@ def book_serializer(book) -> dict:
         "title": book.get("title"),
         "author": book.get("author"),
         "description": book.get("description"),
-        "user_id": str(book.get("user_id"))
     }
 
 def user_serializer(user) -> dict:
