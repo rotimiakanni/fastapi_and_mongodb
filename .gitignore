@@ -129,6 +129,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+book-mongo-venv/
 
 # Spyder project settings
 .spyderproject
