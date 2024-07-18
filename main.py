@@ -28,8 +28,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer", "user_id": user.get('id')}
 
 @app.post("/books")
-def create_book(book_data: schema.BookCreate, user: schema.UserBase = Depends(get_current_user)):
-    book = crud_service.create_book(book_data)
+def create_book(book_data: schema.BookCreatePayload, user: schema.UserBase = Depends(get_current_user)):
+    book_data_u = schema.BookCreate(**book_data.model_dump(), user_id=user.get('id'))
+    book = crud_service.create_book(book_data_u)
     return {"message": "Book created successfully!", "data": book}
 
 @app.get("/books")
@@ -45,15 +46,15 @@ def get_book_by_id(book_id: str):
     return {"data": book}
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
-    book = crud_service.update_book(book_id, book_data)
+def update_book(book_id: str, book_data: schema.BookUpdate, user: schema.UserBase = Depends(get_current_user)):
+    book = crud_service.update_book(book_id, book_data, user.get('id'))
     if not book:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book updated successfully!", "data": book}
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
-    result = crud_service.delete_book(book_id)
+def delete_book(book_id: str, user: schema.UserBase = Depends(get_current_user)):
+    result = crud_service.delete_book(book_id, user.get('id'))
     if not result:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book deleted successfully!"}
