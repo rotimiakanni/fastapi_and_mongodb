@@ -21,13 +21,15 @@ class BookUpdate(BookBase):
 
 # User
 class UserBase(BaseModel):
-    id: str
     username: str
+    full_name: str
+
+class User(UserBase):
+    id: str
 
 class UserCreate(UserBase):
-    full_name: str
     password: str
 
 class UserInDB(UserBase):
-    full_name: str
+    id: str
     hashed_password: str

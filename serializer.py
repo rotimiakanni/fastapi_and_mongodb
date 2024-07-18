@@ -1,3 +1,4 @@
+import crud #import user_crud_service
 def book_serializer(book) -> dict:
     """Converts a MongoDB book object to a Python dictionary"""
     return {
@@ -5,7 +6,16 @@ def book_serializer(book) -> dict:
         "title": book.get("title"),
         "author": book.get("author"),
         "description": book.get("description"),
-        "user_id": str(book.get("user_id"))
+        "user_details": crud.user_crud_service.get_user_by_user_id(book.get("user_id")) #str(book.get("user_id"))
+    }
+
+def user_book_serializer(book) -> dict:
+    """Converts a MongoDB user book object to a Python dictionary"""
+    return {
+        "id": str(book.get("_id")),
+        "title": book.get("title"),
+        "author": book.get("author"),
+        "description": book.get("description")
     }
 
 def user_serializer(user) -> dict:
