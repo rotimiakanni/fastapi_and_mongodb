@@ -1,11 +1,12 @@
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-
-from crud import crud_service, user_crud_service
-import schema
-from auth import pwd_context, authenticate_user, create_access_token, get_current_user
+from passlib.context import CryptContext
+from . import schema, user_crud_service, crud_service
+from .auth import get_current_user, create_access_token, authenticate_user
 
 app = FastAPI()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @app.post("/signup")
 def signup(user: schema.UserCreate):
@@ -45,14 +46,14 @@ def get_book_by_id(book_id: str):
     return {"data": book}
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
+def update_book(book_id: str, book_data: schema.BookUpdate, user: schema.UserBase = Depends(get_current_user)):
     book = crud_service.update_book(book_id, book_data)
     if not book:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book updated successfully!", "data": book}
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
+def delete_book(book_id: str, user: schema.UserBase = Depends(get_current_user)):
     result = crud_service.delete_book(book_id)
     if not result:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
