@@ -34,6 +34,7 @@ class CRUDService:
         if book:
             return serializer.book_serializer(book)
         return None
+        
 
     @staticmethod
     def update_book(book_id: str, book_update_in: schema.BookUpdate):
