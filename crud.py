@@ -85,7 +85,6 @@ class UserCRUDService:
     @staticmethod
     def get_user_by_username_with_hash(username: str) -> schema.UserInDB:
         user = users_collection.find_one({"username": username})
-        print('====', user)
         if user:
             return serializer.user_serializer_password(user)
         return None
