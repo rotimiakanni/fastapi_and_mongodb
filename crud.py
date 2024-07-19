@@ -34,14 +34,18 @@ class CRUDService:
         if book:
             return serializer.book_serializer(book)
         return None
-
+    
     @staticmethod
-    def update_book(book_id: str, book_update_in: schema.BookUpdate):
+    def update_book(book_id: str, book_update_in: schema.BookUpdate, user_id: str):
         book = books_collection.find_one(
             {"_id": ObjectId(book_id)}
-        )
+        ) 
         if not book:
             return None
+        # for books created earlier without user_id and for security purposes
+        if not (book.get('user_id')==user_id):
+            raise HTTPException(detail='You are not authorized to update this book, contact administrator', status_code=status.HTTP_403_FORBIDDEN)
+        
         book_update_data = book_update_in.model_dump(exclude_unset=True)
         book_updated = books_collection.find_one_and_update(
             {"_id": ObjectId(book_id)}, {"$set": book_update_data}, return_document=True
@@ -49,10 +53,15 @@ class CRUDService:
         return serializer.book_serializer(book_updated)
     
     @staticmethod
-    def delete_book(book_id: str):
-        return books_collection.find_one_and_delete({"_id": ObjectId(book_id)})
+    def delete_book(book_id: str, user_id: str):
+        return books_collection.find_one_and_delete({"_id": ObjectId(book_id), "user_id": user_id})
     
-
+    @staticmethod
+    def get_books_by_user_id(user_id: str, skip: int = 0, limit: int = 10):
+        books = books_collection.find({"user_id": user_id}).skip(skip).limit(limit)
+        return [serializer.user_book_serializer(book) for book in books]
+    
+# User
 class UserCRUDService:
     @staticmethod
     def create_user(user_data: schema.UserCreate, hashed_password: str):
@@ -77,6 +86,13 @@ class UserCRUDService:
     @staticmethod
     def get_user_by_username(username: str) -> schema.UserInDB:
         user = users_collection.find_one({"username": username})
+        if user:
+            return serializer.user_serializer(user)
+        return None
+    
+    @staticmethod
+    def get_user_by_user_id(user_id: str) -> schema.UserInDB:
+        user = users_collection.find_one({"_id": ObjectId(user_id)})
         if user:
             return serializer.user_serializer(user)
         return None
