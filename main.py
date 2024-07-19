@@ -45,14 +45,18 @@ def get_book_by_id(book_id: str):
     return {"data": book}
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
+def update_book(book_id: str, book_data: schema.BookUpdate, user: schema.UserBase = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized to delete book")
     book = crud_service.update_book(book_id, book_data)
     if not book:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book updated successfully!", "data": book}
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
+def delete_book(book_id: str, user: schema.UserBase = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized to delete book")
     result = crud_service.delete_book(book_id)
     if not result:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
