@@ -25,7 +25,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(data={"sub": user.get('username')})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.get('id')}
 
 @app.post("/books")
 def create_book(book_data: schema.BookCreate, user: schema.UserBase = Depends(get_current_user)):
