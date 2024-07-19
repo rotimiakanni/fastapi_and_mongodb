@@ -12,7 +12,7 @@ import serializer
 class CRUDService:
 
     @staticmethod
-    def create_book(book_data: schema.BookCreate, user_id:str|None = None):
+    def create_book(book_data: schema.BookCreate):
         book_data = jsonable_encoder(book_data)
         book_document_data = books_collection.insert_one(
             book_data
@@ -29,14 +29,14 @@ class CRUDService:
         return [serializer.book_serializer(book) for book in books]
     
     @staticmethod
-    def get_book_by_id(book_id: str, user_id: str | None = None):
+    def get_book_by_id(book_id: str):
         book = books_collection.find_one({"_id": ObjectId(book_id)})
         if book:
             return serializer.book_serializer(book)
         return None
 
     @staticmethod
-    def update_book(book_id: str, book_update_in: schema.BookUpdate, user_id: str|None = None):
+    def update_book(book_id: str, book_update_in: schema.BookUpdate):
         book = books_collection.find_one(
             {"_id": ObjectId(book_id)}
         )
@@ -49,13 +49,13 @@ class CRUDService:
         return serializer.book_serializer(book_updated)
     
     @staticmethod
-    def delete_book(book_id: str,  user_id: str|None=None):
+    def delete_book(book_id: str):
         return books_collection.find_one_and_delete({"_id": ObjectId(book_id)})
     
 
 class UserCRUDService:
     @staticmethod
-    def create_user(user_data: schema.UserCreate, hashed_password: str, user_id: str|None=None):
+    def create_user(user_data: schema.UserCreate, hashed_password: str):
         # verify if user exists
         if users_collection.find_one({"username": user_data.username}):
             raise HTTPException(detail='User already exists', status_code=status.HTTP_400_BAD_REQUEST)
