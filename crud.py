@@ -12,9 +12,8 @@ import serializer
 class CRUDService:
 
     @staticmethod
-    def create_book(book_data: schema.BookCreate, current_user: schema.UserInDB):
+    def create_book(book_data: schema.BookCreate):
         book_data = jsonable_encoder(book_data)
-        book_data["user_id"] = current_user.id
         book_document_data = books_collection.insert_one(
             book_data
         )
@@ -25,21 +24,22 @@ class CRUDService:
         return serializer.book_serializer(book_document)
     
     @staticmethod
-    def get_all_books(current_user: schema.UserInDB, skip: int = 0, limit: int = 10):
-        books = books_collection.find({"user_id": current_user.id}).skip(skip).limit(limit)
+    def get_all_books(skip: int = 0, limit: int = 10):
+        books = books_collection.find().skip(skip).limit(limit)
         return [serializer.book_serializer(book) for book in books]
     
     @staticmethod
-    def get_book_by_id(book_id: str, current_user: schema.UserInDB):
-        book = books_collection.find_one({"_id": ObjectId(book_id), "user_id": current_user.id})
+    def get_book_by_id(book_id: str):
+        book = books_collection.find_one({"_id": ObjectId(book_id)})
         if book:
             return serializer.book_serializer(book)
         return None
+        
 
     @staticmethod
-    def update_book(book_id: str, book_update_in: schema.BookUpdate,  current_user: schema.UserInDB):
+    def update_book(book_id: str, book_update_in: schema.BookUpdate):
         book = books_collection.find_one(
-            {"_id": ObjectId(book_id), "user_id": current_user.id}
+            {"_id": ObjectId(book_id)}
         )
         if not book:
             return None
@@ -50,8 +50,8 @@ class CRUDService:
         return serializer.book_serializer(book_updated)
     
     @staticmethod
-    def delete_book(book_id: str, current_user: schema.UserInDB):
-        return books_collection.find_one_and_delete({"_id": ObjectId(book_id), "user_id": current_user.id})
+    def delete_book(book_id: str):
+        return books_collection.find_one_and_delete({"_id": ObjectId(book_id)})
     
 
 class UserCRUDService:

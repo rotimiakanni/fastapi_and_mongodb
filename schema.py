@@ -1,24 +1,26 @@
 from typing import Optional
 from pydantic import BaseModel
-
+ 
 class BookBase(BaseModel):
     title: str
     author: str
     description: str
-    
 
 class Book(BookBase):
     id: str
-    user_id: str
         
-class BookCreate(BookBase):
+class BookCreatePayload(BookBase):
     pass
+
+class BookCreate(BookBase):
+    user_id: str
 
 class BookUpdate(BookBase):
     description: Optional[str] = None
 
 # User
 class UserBase(BaseModel):
+    id: str
     username: str
 
 class UserCreate(UserBase):
@@ -26,6 +28,5 @@ class UserCreate(UserBase):
     password: str
 
 class UserInDB(UserBase):
-    id: str
     full_name: str
     hashed_password: str
