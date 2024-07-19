@@ -1,3 +1,4 @@
+#crud.py
 from fastapi.encoders import jsonable_encoder
 from bson.objectid import ObjectId
 from fastapi import HTTPException, status
@@ -34,6 +35,7 @@ class CRUDService:
         if book:
             return serializer.book_serializer(book)
         return None
+        
 
     @staticmethod
     def update_book(book_id: str, book_update_in: schema.BookUpdate):
@@ -84,6 +86,7 @@ class UserCRUDService:
     @staticmethod
     def get_user_by_username_with_hash(username: str) -> schema.UserInDB:
         user = users_collection.find_one({"username": username})
+        print('====', user)
         if user:
             return serializer.user_serializer_password(user)
         return None
