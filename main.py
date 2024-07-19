@@ -69,6 +69,8 @@ def update_book(book_id: str, book_data: schema.BookUpdate, current_user : schem
     Done by an Authenticated User that created the book and returns not Authorized if it is not the user making the request
     """
     book = crud_service.get_book_by_id(book_id)
+    if not book:
+            return {"message": "Book not found"}
     if current_user.get("id")== book.get("user_id"):
         book = crud_service.update_book(book_id, book_data)
         return {"message": "Book updated successfully!", "data": book}
@@ -85,6 +87,8 @@ def delete_book(book_id: str,  current_user : schema.UserBase = Depends(get_curr
     Done by an Authenticated User that created the book and returns not Authorized if it is not the user making the request
     """
     book = crud_service.get_book_by_id(book_id)
+    if not book:
+            return {"message": "Book not found"}
     if current_user.get("id") == book.get("user_id"):
         crud_service.delete_book(book_id)
         return {"message": "Book deleted successfully!"}
