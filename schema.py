@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
-from bson.objectid import ObjectId
 
+# Book Schemas
 class BookBase(BaseModel):
     title: str
     author: str
@@ -9,19 +9,17 @@ class BookBase(BaseModel):
 
 class Book(BookBase):
     id: str
-        
-class BookCreatePayload(BookBase):
-    pass
 
 class BookCreate(BookBase):
     user_id: str
 
-class BookUpdate(BookBase):
+class BookUpdate(BaseModel):
+    title: Optional[str] = None
+    author: Optional[str] = None
     description: Optional[str] = None
 
-# User
+# User Schemas
 class UserBase(BaseModel):
-    id: str
     username: str
 
 class UserCreate(UserBase):
@@ -29,5 +27,10 @@ class UserCreate(UserBase):
     password: str
 
 class UserInDB(UserBase):
+    id: str
     full_name: str
     hashed_password: str
+
+class User(UserBase):
+    id: str
+    full_name: str
