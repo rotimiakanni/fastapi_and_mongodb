@@ -10,5 +10,5 @@ client = mongo_client.MongoClient(MONGO_DB_CONNECTION_URI)
 print("Connected to MongoDB")
 
 # Get or create collection
-books_collection = client["book_app"]["books"]
-users_collection = client["book_app"]["users"]
+books_collection = client["book-app"]["books"]
+users_collection = client["book-app"]["users"]
