@@ -29,31 +29,31 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @app.post("/books")
 def create_book(book_data: schema.BookCreate, user: schema.UserBase = Depends(get_current_user)):
-    book = crud_service.create_book(book_data)
+    book = crud_service.create_book(book_data, user)
     return {"message": "Book created successfully!", "data": book}
 
 @app.get("/books")
-def get_all_books(skip: int = 0, limit: int = 10):
-    books = crud_service.get_all_books(skip, limit)
+def get_all_books(skip: int = 0, limit: int = 10, user: schema.UserBase = Depends(get_current_user) ):
+    books = crud_service.get_all_books(skip, limit, user)
     return {"data": books}
 
 @app.get("/books/{book_id}")
-def get_book_by_id(book_id: str):
-    book = crud_service.get_book_by_id(book_id)
+def get_book_by_id(book_id: str, user: schema.UserBase = Depends(get_current_user)):
+    book = crud_service.get_book_by_id(book_id, user)
     if not book:
         return {"message": "Book not found"}
     return {"data": book}
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
-    book = crud_service.update_book(book_id, book_data)
+def update_book(book_id: str, book_data: schema.BookUpdate, user: schema.UserBase = Depends(get_current_user)):
+    book = crud_service.update_book(book_id, book_data, user)
     if not book:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book updated successfully!", "data": book}
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
-    result = crud_service.delete_book(book_id)
+def delete_book(book_id: str, user: schema.UserBase = Depends(get_current_user)):
+    result = crud_service.delete_book(book_id, user)
     if not result:
         raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
     return {"message": "Book deleted successfully!"}
