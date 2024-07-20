@@ -1,6 +1,5 @@
 from typing import Optional
 from pydantic import BaseModel
-from bson.objectid import ObjectId
 
 class BookBase(BaseModel):
     title: str
@@ -17,8 +16,13 @@ class BookCreate(BookBase):
     user_id: str
 
 class BookUpdate(BookBase):
+    user_id: str
     description: Optional[str] = None
 
+class BookDelete(BookBase):
+    user_id: str
+    
+    
 # User
 class UserBase(BaseModel):
     id: str
@@ -31,3 +35,7 @@ class UserCreate(UserBase):
 class UserInDB(UserBase):
     full_name: str
     hashed_password: str
+    
+class user(UserBase):
+    full_name: str
+    
