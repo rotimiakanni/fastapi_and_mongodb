@@ -38,3 +38,4 @@ class UserInDB(UserBase):
     
 class user(UserBase):
     full_name: str
+    
