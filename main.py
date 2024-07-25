@@ -29,31 +29,71 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @app.post("/books")
 def create_book(book_data: schema.BookCreate, user: schema.UserBase = Depends(get_current_user)):
+    """
+    ## Create a Book
+    Done by an Authenticated User
+    """
     book = crud_service.create_book(book_data)
     return {"message": "Book created successfully!", "data": book}
 
 @app.get("/books")
-def get_all_books(skip: int = 0, limit: int = 10):
+def get_all_books(skip: int = 0, limit: int = 10, current_user : schema.UserBase = Depends(get_current_user)):
+    """
+    ## Fetch Books
+    Done by an Authenticated User
+    """
     books = crud_service.get_all_books(skip, limit)
     return {"data": books}
 
 @app.get("/books/{book_id}")
-def get_book_by_id(book_id: str):
+def get_book_by_id(book_id: str,  current_user : schema.UserBase = Depends(get_current_user)):
+    """
+    ## Fetch Book by it's id
+    Done by an Authenticated User that created the book and returns not Authorized if it is not the user making the request
+    """
     book = crud_service.get_book_by_id(book_id)
     if not book:
-        return {"message": "Book not found"}
-    return {"data": book}
+            return {"message": "Book not found"}
+    if current_user.get("id")== book.get("user_id"):
+        return {"data": book}
+    raise HTTPException (
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You are not authorized to access this resource"
+    )
+  
 
 @app.put("/books/{book_id}")
-def update_book(book_id: str, book_data: schema.BookUpdate):
-    book = crud_service.update_book(book_id, book_data)
+def update_book(book_id: str, book_data: schema.BookUpdate, current_user : schema.UserBase = Depends(get_current_user)):
+    """
+    ## Update Book by it's id
+    Done by an Authenticated User that created the book and returns not Authorized if it is not the user making the request
+    """
+    book = crud_service.get_book_by_id(book_id)
     if not book:
-        raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
-    return {"message": "Book updated successfully!", "data": book}
+            return {"message": "Book not found"}
+    if current_user.get("id")== book.get("user_id"):
+        book = crud_service.update_book(book_id, book_data)
+        return {"message": "Book updated successfully!", "data": book}
+    raise HTTPException (
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You are not authorized to Update this resource"
+    )    
+ 
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id: str):
-    result = crud_service.delete_book(book_id)
-    if not result:
-        raise HTTPException(detail="Book not found", status_code=status.HTTP_400_BAD_REQUEST)
-    return {"message": "Book deleted successfully!"}
+def delete_book(book_id: str,  current_user : schema.UserBase = Depends(get_current_user)):
+    """
+    ## Delete Book by it's id
+    Done by an Authenticated User that created the book and returns not Authorized if it is not the user making the request
+    """
+    book = crud_service.get_book_by_id(book_id)
+    if not book:
+            return {"message": "Book not found"}
+    if current_user.get("id") == book.get("user_id"):
+        crud_service.delete_book(book_id)
+        return {"message": "Book deleted successfully!"}
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You are not authorized to delete this resource"
+    )
+   
